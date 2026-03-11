@@ -1,17 +1,20 @@
-// POST /api/contact
-// Enregistre un message de contact
-// (un modèle Contact.js peut être ajouté si besoin de persistance)
+const Contact = require("../models/Contact");
 
+// POST /api/contact
+// Enregistre un message de contact en base de données
 const sendMessage = async (req, res, next) => {
   try {
     const { name, phone, message } = req.body;
 
-    // Pour l'instant on log le message — tu peux y brancher un modèle MongoDB
-    // ou un service email (nodemailer) plus tard
-    console.log("Nouveau message de contact :", { name, phone, message });
+    const newContact = await Contact.create({ name, phone, message });
 
-    res.status(200).json({
+    res.status(201).json({
       message: "Message reçu, nous vous contacterons bientôt.",
+      contact: {
+        id: newContact._id,
+        name: newContact.name,
+        created_at: newContact.created_at,
+      },
     });
   } catch (error) {
     next(error);
